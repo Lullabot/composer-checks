@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lullabot;
+namespace ComposerChecks;
 
 use Composer\Composer;
 use Composer\Config;
