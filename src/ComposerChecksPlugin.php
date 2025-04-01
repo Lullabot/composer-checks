@@ -157,15 +157,14 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     if ($this->extra['drainpipe']['composer']['disable-exit-on-patch-failure-check'] ?? false) {
       return;
     }
-
     $composerExitsOnPatchFailure = $this->extra['composer-exit-on-patch-failure']
       ?? false;
     $composerExitsOnPatchFailureBool = is_bool($composerExitsOnPatchFailure);
-    $condition1 = !$composerExitsOnPatchFailure ||
+    $isNotConfiguredOrNotBool = !$composerExitsOnPatchFailure ||
       !$composerExitsOnPatchFailureBool;
-    $condition2 = $composerExitsOnPatchFailureBool
+    $isBoolButNotTrue = $composerExitsOnPatchFailureBool
       && $composerExitsOnPatchFailure !== true;
-    $warn = $condition1 && $condition2;
+    $warn = $isNotConfiguredOrNotBool && $isBoolButNotTrue;
 
     if (!$warn) {
       return;
