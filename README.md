@@ -49,6 +49,12 @@ See https://architecture.lullabot.com/adr/20220429-composer-patchlevel/
 See https://architecture.lullabot.com/adr/20220429-composer-exit-failure/
 
 
+To avoid this check, set `extra.composer-checks.disable-exit-on-patch-failure-check` to `"true"` in your `composer.json` file, or run the following:
+
+```
+composer config extra.composer-checks.disable-exit-on-patch-failure-check true
+```
+
 ### Check: Store Composer Patches configuration in composer.json
 
 > Validating a complete Composer configuration is important to ensuring build issues are caught early.
