@@ -66,3 +66,8 @@ See https://architecture.lullabot.com/adr/20220429-composer-patches-inline/
 > When using [cweagans/composer-patches](https://github.com/cweagans/composer-patches), it is important that patch sources are consistent and do not change between builds.
 See https://architecture.lullabot.com/adr/20220429-composer-patch-files/
 
+To avoid this check, set `extra.composer-checks.disable-local-patches-check` to `"true"` in your `composer.json` file, or run the following:
+
+```
+composer config extra.composer-checks.disable-local-patches-check true
+```
