@@ -42,6 +42,10 @@ composer require lullabot/composer-checks
 > Drupal's git repository has a different directory structure than projects built on Drupal. Default Composer Patches settings can cause Drupal patches to be silently misapplied.
 See https://architecture.lullabot.com/adr/20220429-composer-patchlevel/
 
+To avoid this check, set `extra.composer-checks.disable-drupal-core-patches-level-check` to `"true"` in your `composer.json` file, or run the following:
+```
+composer config extra.composer-checks.disable-drupal-core-patches-level-check true
+```
 
 ### Check: Break composer install if patches don't apply
 
@@ -49,14 +53,29 @@ See https://architecture.lullabot.com/adr/20220429-composer-patchlevel/
 See https://architecture.lullabot.com/adr/20220429-composer-exit-failure/
 
 
+To avoid this check, set `extra.composer-checks.disable-exit-on-patch-failure-check` to `"true"` in your `composer.json` file, or run the following:
+
+```
+composer config extra.composer-checks.disable-exit-on-patch-failure-check true
+```
+
 ### Check: Store Composer Patches configuration in composer.json
 
 > Validating a complete Composer configuration is important to ensuring build issues are caught early.
 See https://architecture.lullabot.com/adr/20220429-composer-patches-inline/
 
+To avoid this check, set `extra.composer-checks.disable-patches-file-check` to `"true"` in your `composer.json` file, or run the following:
+```
+composer config extra.composer-checks.disable-patches-file-check true
+```
 
 ### Check: Use local copies of patch files
 
 > When using [cweagans/composer-patches](https://github.com/cweagans/composer-patches), it is important that patch sources are consistent and do not change between builds.
 See https://architecture.lullabot.com/adr/20220429-composer-patch-files/
 
+To avoid this check, set `extra.composer-checks.disable-local-patches-check` to `"true"` in your `composer.json` file, or run the following:
+
+```
+composer config extra.composer-checks.disable-local-patches-check true
+```
