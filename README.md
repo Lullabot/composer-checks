@@ -42,6 +42,10 @@ composer require lullabot/composer-checks
 > Drupal's git repository has a different directory structure than projects built on Drupal. Default Composer Patches settings can cause Drupal patches to be silently misapplied.
 See https://architecture.lullabot.com/adr/20220429-composer-patchlevel/
 
+To avoid this check, set `extra.composer-checks.disable-drupal-core-patches-level-check` to `"true"` in your `composer.json` file, or run the following:
+```
+composer config extra.composer-checks.disable-drupal-core-patches-level-check true
+```
 
 ### Check: Break composer install if patches don't apply
 
@@ -60,6 +64,10 @@ composer config extra.composer-checks.disable-exit-on-patch-failure-check true
 > Validating a complete Composer configuration is important to ensuring build issues are caught early.
 See https://architecture.lullabot.com/adr/20220429-composer-patches-inline/
 
+To avoid this check, set `extra.composer-checks.disable-patches-file-check` to `"true"` in your `composer.json` file, or run the following:
+```
+composer config extra.composer-checks.disable-patches-file-check true
+```
 
 ### Check: Use local copies of patch files
 
