@@ -136,14 +136,14 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     }
     $patchesInfo = rtrim($patchesInfo, PHP_EOL);
 
-    // Communicate the user.
-    $msg = "Use local copies of patch files for Composer's packages. \nSee";
-    $link = 'https://architecture.lullabot.com/adr/20220429-composer-patch-files/';
-    $this->io->$message_type("$msg $link $patchesInfo");
+    $this->say("
+      Use local copies of patch files for Composer's packages.
+      \nSee https://architecture.lullabot.com/adr/20220429-composer-patch-files/
+      \n$patchesInfo
+      ",
+      $message_type
+    );
 
-    if ($message_type === 'error') {
-      exit(1);
-    }
   }
 
   /**
@@ -170,13 +170,12 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
       return;
     }
 
-    $msg = "It's recommended to break Composer's installation if patches don't apply. \nSee";
-    $link = 'https://architecture.lullabot.com/adr/20220429-composer-exit-failure/';
-    $this->io->$message_type("$msg $link");
-
-    if ($message_type === 'error') {
-      exit(1);
-    }
+    $this->say("
+      It's recommended to break Composer's installation if patches don't apply.
+      \nSee https://architecture.lullabot.com/adr/20220429-composer-exit-failure/
+      ",
+      $message_type
+    );
 
   }
 
@@ -200,13 +199,12 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
       return;
     }
 
-    $msg = "Configure patches for Composer's packages to use `-p2` as `patchLevel` for Drupal core. \nSee";
-    $link = 'https://architecture.lullabot.com/adr/20220429-composer-patchlevel/';
-    $this->io->$message_type("$msg $link");
-
-    if ($message_type === 'error') {
-      exit(1);
-    }
+    $this->say("
+      Configure patches for Composer's packages to use `-p2` as `patchLevel` for Drupal core.
+      \nSee https://architecture.lullabot.com/adr/20220429-composer-patchlevel/
+      ",
+      $message_type
+    );
   }
 
   /**
@@ -224,13 +222,12 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
       return;
     }
 
-    $msg = "Store patches for Composer's packages in `composer.json`, not in a separate file. \nSee";
-    $link = 'https://architecture.lullabot.com/adr/20220429-composer-patches-inline/';
-    $this->io->$message_type("$msg $link");
-
-    if ($message_type === 'error') {
-      exit(1);
-    }
+    $this->say("
+      Store patches for Composer's packages in `composer.json`, not in a separate file.
+      \nSee https://architecture.lullabot.com/adr/20220429-composer-patches-inline/
+      ",
+      $message_type
+    );
   }
 
   /**
@@ -264,6 +261,18 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     $this->checkComposerBreaksIfPatchesDoNotApply();
     $this->checkPatchesStoredInComposerJson();
     $this->checkComposerPatchesAreLocal();
+  }
+
+  /**
+   * Say a message and exit if the message type is error.
+   */
+  private function say(string $message, string $message_type)
+  {
+    $this->io->$message_type("$message");
+
+    if ($message_type === 'error') {
+      exit(1);
+    }
   }
 
 }
