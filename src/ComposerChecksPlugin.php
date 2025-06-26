@@ -76,8 +76,8 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkComposerPatchesAreLocal()
   {
 
-    $value = $this->extra['composer-checks']['disable-local-patches-check'] ?? false;
-    $message_type = $value ? 'warning' : 'error';
+    $just_a_warning = $this->extra['composer-checks']['disable-local-patches-check'] ?? false;
+    $message_type = $just_a_warning ? 'warning' : 'error';
     $patchesInComposer = $this->extra['patches'] ?? false;
     $patchesInExtraFile = $this->extra['patches-file'] ?? false;
 
@@ -155,8 +155,8 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkComposerBreaksIfPatchesDoNotApply()
   {
 
-    $value = $this->extra['composer-checks']['disable-exit-on-patch-failure-check'] ?? false;
-    $message_type = $value ? 'error' : 'warning';
+    $just_a_warning = $this->extra['composer-checks']['disable-exit-on-patch-failure-check'] ?? false;
+    $message_type = $just_a_warning ? 'warning' : 'error';
 
     $composerExitsOnPatchFailure = $this->extra['composer-exit-on-patch-failure']
       ?? false;
@@ -190,8 +190,8 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkDrupalCoreComposerPatchesLevel()
   {
 
-    $value = $this->extra['composer-checks']['disable-drupal-core-patches-level-check'] ?? false;
-    $message_type = $value ? 'warning' : 'error';
+    $just_a_warning = $this->extra['composer-checks']['disable-drupal-core-patches-level-check'] ?? false;
+    $message_type = $just_a_warning ? 'warning' : 'error';
 
     $patchLevel = $this->extra['patchLevel']['drupal/core'] ?? false;
     $patchLevelIsString = is_string($patchLevel);
@@ -220,8 +220,8 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkPatchesStoredInComposerJson()
   {
 
-    $value = $this->extra['composer-checks']['disable-patches-file-check'] ?? false;
-    $message_type = $value ? 'warning' : 'error';
+    $just_a_warning = $this->extra['composer-checks']['disable-patches-file-check'] ?? false;
+    $message_type = $just_a_warning ? 'warning' : 'error';
 
     if (!isset($this->extra['patches-file'])) {
       return;
