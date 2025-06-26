@@ -37,8 +37,9 @@ jobs:
         composer config allow-plugins.cweagans/composer-patches true
         composer require drupal/core:^10.0 --no-update
         composer require cweagans/composer-patches:^1.7 --no-update
-        composer require lullabot/composer-checks:* --dev --no-update
+        composer require "lullabot/composer-checks:*" --dev --no-update
         composer config extra.patches.drupal/core.some-test-patch "https://example.com/test.patch"
+        composer config minimum-stability dev
 
     - name: Test 1 - Verify check fails without disable flag
       run: |
@@ -69,6 +70,7 @@ jobs:
         composer require lullabot/composer-checks:* --dev --no-update
         composer config extra.composer-checks.0 "disable-drupal-core-patches-level-check"
         composer config extra.patches.drupal/core.some-test-patch "https://example.com/test.patch"
+        composer config minimum-stability dev
 
     - name: Test 2 - Verify check shows warning with disable flag
       run: |
@@ -104,6 +106,7 @@ jobs:
         composer require lullabot/composer-checks:* --dev --no-update
         composer config extra.patchLevel.drupal/core "-p2"
         composer config extra.patches.drupal/core.some-test-patch "https://example.com/test.patch"
+        composer config minimum-stability dev
 
     - name: Test 3 - Verify check passes with correct configuration
       run: |
@@ -139,6 +142,7 @@ jobs:
         composer require lullabot/composer-checks:* --dev --no-update
         composer config extra.patchLevel.drupal/core "-p1"
         composer config extra.patches.drupal/core.some-test-patch "https://example.com/test.patch"
+        composer config minimum-stability dev
 
     - name: Test 4 - Verify check fails with incorrect patchLevel value
       run: |
