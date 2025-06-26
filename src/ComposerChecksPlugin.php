@@ -137,7 +137,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     $patchesInfo = rtrim($patchesInfo, PHP_EOL);
 
     // Communicate the user.
-    $msg = 'Use local copies of patch files for Composer\'s packages. See';
+    $msg = "Use local copies of patch files for Composer's packages. \nSee";
     $link = 'https://architecture.lullabot.com/adr/20220429-composer-patch-files/';
     $this->io->$message_type("$msg $link $patchesInfo");
 
@@ -170,7 +170,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
       return;
     }
 
-    $msg = "It's recommended to break Composer's installation if patches don't apply. See";
+    $msg = "It's recommended to break Composer's installation if patches don't apply. \nSee";
     $link = 'https://architecture.lullabot.com/adr/20220429-composer-exit-failure/';
     $this->io->$message_type("$msg $link");
 
@@ -200,7 +200,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
       return;
     }
 
-    $msg = 'Configure patches for Composer\'s packages to use `-p2` as `patchLevel` for Drupal core. See';
+    $msg = "Configure patches for Composer's packages to use `-p2` as `patchLevel` for Drupal core. \nSee";
     $link = 'https://architecture.lullabot.com/adr/20220429-composer-patchlevel/';
     $this->io->$message_type("$msg $link");
 
