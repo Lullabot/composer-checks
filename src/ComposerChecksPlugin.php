@@ -142,7 +142,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     $this->io->$message_type("$msg $link $patchesInfo");
 
     if ($message_type === 'error') {
-      $this->io->info("To throw a warning instead, run `composer config extra.composer-checks.disable-local-patches-check true`");
+      $this->io->warning("To throw a warning instead, run `composer config extra.composer-checks.disable-local-patches-check true`");
       exit(1);
     }
   }
@@ -176,7 +176,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     $this->io->$message_type("$msg $link");
 
     if ($message_type === 'error') {
-      $this->io->info("To throw a warning instead, run `composer config extra.composer-checks.disable-exit-on-patch-failure-check true`");
+      $this->io->warning("To throw a warning instead, run `composer config extra.composer-checks.disable-exit-on-patch-failure-check true`");
       exit(1);
     }
 
@@ -207,7 +207,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     $this->io->$message_type("$msg $link");
 
     if ($message_type === 'error') {
-      $this->io->info("To throw a warning instead, run `composer config extra.composer-checks.disable-drupal-core-patches-level-check true`");
+      $this->io->warning("To throw a warning instead, run `composer config extra.composer-checks.disable-drupal-core-patches-level-check true`");
       exit(1);
     }
   }
@@ -232,7 +232,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     $this->io->$message_type("$msg $link");
 
     if ($message_type === 'error') {
-      $this->io->info("To throw a warning instead, run `composer config extra.composer-checks.disable-patches-file-check true`");
+      $this->io->warning("To throw a warning instead, run `composer config extra.composer-checks.disable-patches-file-check true`");
       exit(1);
     }
   }
