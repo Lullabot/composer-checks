@@ -28,41 +28,17 @@ jobs:
       run: composer install --no-progress --prefer-dist --optimize-autoloader
 
     # Test 1: Check should FAIL when patchLevel is not configured (no disable flag)
-    - name: Test 1 - Create composer.json without patchLevel and without disable flag
+    - name: Test 1 - Build composer.json without patchLevel and without disable flag
       run: |
-        mkdir -p test1
-        cd test1
-        cat > composer.json << 'EOF'
-        {
-          "name": "test/project",
-          "require": {
-            "drupal/core": "^10.0",
-            "cweagans/composer-patches": "^1.7"
-          },
-          "require-dev": {
-            "lullabot/composer-checks": "*"
-          },
-          "repositories": [
-            {
-              "type": "path",
-              "url": "../"
-            }
-          ],
-          "config": {
-            "allow-plugins": {
-              "lullabot/composer-checks": true,
-              "cweagans/composer-patches": true
-            }
-          },
-          "extra": {
-            "patches": {
-              "drupal/core": {
-                "Some test patch": "https://example.com/test.patch"
-              }
-            }
-          }
-        }
-        EOF
+        mkdir -p test1 && cd test1
+        composer init --name="test/project" --no-interaction
+        composer config repositories.local path ../
+        composer config allow-plugins.lullabot/composer-checks true
+        composer config allow-plugins.cweagans/composer-patches true
+        composer require drupal/core:^10.0 --no-update
+        composer require cweagans/composer-patches:^1.7 --no-update
+        composer require lullabot/composer-checks:* --dev --no-update
+        composer config extra.patches.drupal/core.some-test-patch "https://example.com/test.patch"
 
     - name: Test 1 - Verify check fails without disable flag
       run: |
@@ -76,44 +52,18 @@ jobs:
         fi
 
     # Test 2: Check should PASS (show warning) when disable flag is present
-    - name: Test 2 - Create composer.json with disable flag
+    - name: Test 2 - Build composer.json with disable flag
       run: |
-        mkdir -p test2
-        cd test2
-        cat > composer.json << 'EOF'
-        {
-          "name": "test/project",
-          "require": {
-            "drupal/core": "^10.0",
-            "cweagans/composer-patches": "^1.7"
-          },
-          "require-dev": {
-            "lullabot/composer-checks": "*"
-          },
-          "repositories": [
-            {
-              "type": "path",
-              "url": "../"
-            }
-          ],
-          "config": {
-            "allow-plugins": {
-              "lullabot/composer-checks": true,
-              "cweagans/composer-patches": true
-            }
-          },
-          "extra": {
-            "composer-checks": [
-              "disable-drupal-core-patches-level-check"
-            ],
-            "patches": {
-              "drupal/core": {
-                "Some test patch": "https://example.com/test.patch"
-              }
-            }
-          }
-        }
-        EOF
+        mkdir -p test2 && cd test2
+        composer init --name="test/project" --no-interaction
+        composer config repositories.local path ../
+        composer config allow-plugins.lullabot/composer-checks true
+        composer config allow-plugins.cweagans/composer-patches true
+        composer require drupal/core:^10.0 --no-update
+        composer require cweagans/composer-patches:^1.7 --no-update
+        composer require lullabot/composer-checks:* --dev --no-update
+        composer config extra.composer-checks.0 "disable-drupal-core-patches-level-check"
+        composer config extra.patches.drupal/core.some-test-patch "https://example.com/test.patch"
 
     - name: Test 2 - Verify check shows warning with disable flag
       run: |
@@ -136,44 +86,18 @@ jobs:
         fi
 
     # Test 3: Check should PASS silently when patchLevel is correctly configured
-    - name: Test 3 - Create composer.json with correct patchLevel configuration
+    - name: Test 3 - Build composer.json with correct patchLevel configuration
       run: |
-        mkdir -p test3
-        cd test3
-        cat > composer.json << 'EOF'
-        {
-          "name": "test/project",
-          "require": {
-            "drupal/core": "^10.0",
-            "cweagans/composer-patches": "^1.7"
-          },
-          "require-dev": {
-            "lullabot/composer-checks": "*"
-          },
-          "repositories": [
-            {
-              "type": "path",
-              "url": "../"
-            }
-          ],
-          "config": {
-            "allow-plugins": {
-              "lullabot/composer-checks": true,
-              "cweagans/composer-patches": true
-            }
-          },
-          "extra": {
-            "patchLevel": {
-              "drupal/core": "-p2"
-            },
-            "patches": {
-              "drupal/core": {
-                "Some test patch": "https://example.com/test.patch"
-              }
-            }
-          }
-        }
-        EOF
+        mkdir -p test3 && cd test3
+        composer init --name="test/project" --no-interaction
+        composer config repositories.local path ../
+        composer config allow-plugins.lullabot/composer-checks true
+        composer config allow-plugins.cweagans/composer-patches true
+        composer require drupal/core:^10.0 --no-update
+        composer require cweagans/composer-patches:^1.7 --no-update
+        composer require lullabot/composer-checks:* --dev --no-update
+        composer config extra.patchLevel.drupal/core "-p2"
+        composer config extra.patches.drupal/core.some-test-patch "https://example.com/test.patch"
 
     - name: Test 3 - Verify check passes with correct configuration
       run: |
@@ -196,44 +120,18 @@ jobs:
         fi
 
     # Test 4: Check should FAIL when patchLevel is configured but incorrect value
-    - name: Test 4 - Create composer.json with incorrect patchLevel value
+    - name: Test 4 - Build composer.json with incorrect patchLevel value
       run: |
-        mkdir -p test4
-        cd test4
-        cat > composer.json << 'EOF'
-        {
-          "name": "test/project",
-          "require": {
-            "drupal/core": "^10.0",
-            "cweagans/composer-patches": "^1.7"
-          },
-          "require-dev": {
-            "lullabot/composer-checks": "*"
-          },
-          "repositories": [
-            {
-              "type": "path",
-              "url": "../"
-            }
-          ],
-          "config": {
-            "allow-plugins": {
-              "lullabot/composer-checks": true,
-              "cweagans/composer-patches": true
-            }
-          },
-          "extra": {
-            "patchLevel": {
-              "drupal/core": "-p1"
-            },
-            "patches": {
-              "drupal/core": {
-                "Some test patch": "https://example.com/test.patch"
-              }
-            }
-          }
-        }
-        EOF
+        mkdir -p test4 && cd test4
+        composer init --name="test/project" --no-interaction
+        composer config repositories.local path ../
+        composer config allow-plugins.lullabot/composer-checks true
+        composer config allow-plugins.cweagans/composer-patches true
+        composer require drupal/core:^10.0 --no-update
+        composer require cweagans/composer-patches:^1.7 --no-update
+        composer require lullabot/composer-checks:* --dev --no-update
+        composer config extra.patchLevel.drupal/core "-p1"
+        composer config extra.patches.drupal/core.some-test-patch "https://example.com/test.patch"
 
     - name: Test 4 - Verify check fails with incorrect patchLevel value
       run: |
@@ -245,6 +143,18 @@ jobs:
         else
           echo "✅ Test 4 PASSED: Composer install correctly failed with incorrect patchLevel value"
         fi
+
+    # Test 5: Verify the composer.json files were built correctly
+    - name: Test 5 - Show generated composer.json files for verification
+      run: |
+        echo "=== Test 1 composer.json ==="
+        cat test1/composer.json | jq .
+        echo -e "\n=== Test 2 composer.json ==="
+        cat test2/composer.json | jq .
+        echo -e "\n=== Test 3 composer.json ==="
+        cat test3/composer.json | jq .
+        echo -e "\n=== Test 4 composer.json ==="
+        cat test4/composer.json | jq .
 
     - name: Cleanup test directories
       run: |
