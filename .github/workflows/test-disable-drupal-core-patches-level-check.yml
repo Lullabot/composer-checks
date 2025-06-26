@@ -46,8 +46,10 @@ jobs:
         cd test1
         # Run composer install and expect it to fail (exit code 1)
         echo "=== Running composer install for Test 1 ==="
+        set +e  # Disable exit on error
         output=$(composer install --no-progress --ignore-platform-reqs 2>&1)
         exit_code=$?
+        set -e  # Re-enable exit on error (if it was set)
         echo "$output"
 
         if [ $exit_code -eq 0 ]; then
@@ -77,8 +79,10 @@ jobs:
         cd test2
         # Run composer install and expect it to succeed with warnings
         echo "=== Running composer install for Test 2 ==="
+        set +e  # Disable exit on error
         output=$(composer install --no-progress --ignore-platform-reqs 2>&1)
         exit_code=$?
+        set -e  # Re-enable exit on error (if it was set)
         echo "$output"
 
         if [ $exit_code -eq 0 ]; then
@@ -113,8 +117,10 @@ jobs:
         cd test3
         # Run composer install and expect it to succeed without warnings about patchLevel
         echo "=== Running composer install for Test 3 ==="
+        set +e  # Disable exit on error
         output=$(composer install --no-progress --ignore-platform-reqs 2>&1)
         exit_code=$?
+        set -e  # Re-enable exit on error (if it was set)
         echo "$output"
 
         if [ $exit_code -eq 0 ]; then
@@ -149,8 +155,10 @@ jobs:
         cd test4
         # Run composer install and expect it to fail
         echo "=== Running composer install for Test 4 ==="
+        set +e  # Disable exit on error
         output=$(composer install --no-progress --ignore-platform-reqs 2>&1)
         exit_code=$?
+        set -e  # Re-enable exit on error (if it was set)
         echo "$output"
 
         if [ $exit_code -eq 0 ]; then
