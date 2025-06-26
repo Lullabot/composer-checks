@@ -76,7 +76,8 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkComposerPatchesAreLocal()
   {
 
-    $message_type = $this->extra['composer-checks']['disable-local-patches-check'] ? 'warning' : 'error';
+    $value = $this->extra['composer-checks']['disable-local-patches-check'] ?? false;
+    $message_type = $value ? 'warning' : 'error';
     $patchesInComposer = $this->extra['patches'] ?? false;
     $patchesInExtraFile = $this->extra['patches-file'] ?? false;
 
@@ -149,7 +150,8 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkComposerBreaksIfPatchesDoNotApply()
   {
 
-    $message_type = $this->extra['composer-checks']['disable-exit-on-patch-failure-check'] ? 'warning' : 'error';
+    $value = $this->extra['composer-checks']['disable-exit-on-patch-failure-check'] ?? false;
+    $message_type = $value ? 'warning' : 'error';
 
     $composerExitsOnPatchFailure = $this->extra['composer-exit-on-patch-failure']
       ?? false;
@@ -177,7 +179,8 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkDrupalCoreComposerPatchesLevel()
   {
 
-    $message_type = $this->extra['composer-checks']['disable-drupal-core-patches-level-check'] ? 'warning' : 'error';
+    $value = $this->extra['composer-checks']['disable-drupal-core-patches-level-check'] ?? false;
+    $message_type = $value ? 'warning' : 'error';
 
     $patchLevel = $this->extra['patchLevel']['drupal/core'] ?? false;
     $patchLevelIsString = is_string($patchLevel);
@@ -201,7 +204,8 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkPatchesStoredInComposerJson()
   {
 
-    $message_type = $this->extra['composer-checks']['disable-patches-file-check'] ? 'warning' : 'error';
+    $value = $this->extra['composer-checks']['disable-patches-file-check'] ?? false;
+    $message_type = $value ? 'warning' : 'error';
 
     if (!isset($this->extra['patches-file'])) {
       return;
