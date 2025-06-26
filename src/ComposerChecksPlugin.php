@@ -76,8 +76,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkComposerPatchesAreLocal()
   {
 
-    $just_a_warning = in_array('disable-local-patches-check', $this->extra['composer-checks']) ?? false;
-    $message_type = $just_a_warning ? 'warning' : 'error';
+    $message_type = $this->getMessageType('disable-local-patches-check');
     $patchesInComposer = $this->extra['patches'] ?? false;
     $patchesInExtraFile = $this->extra['patches-file'] ?? false;
 
@@ -154,8 +153,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkComposerBreaksIfPatchesDoNotApply()
   {
 
-    $just_a_warning = in_array('disable-exit-on-patch-failure-check', $this->extra['composer-checks']) ?? false;
-    $message_type = $just_a_warning ? 'warning' : 'error';
+    $message_type = $this->getMessageType('disable-exit-on-patch-failure-check');
 
     $composerExitsOnPatchFailure = $this->extra['composer-exit-on-patch-failure']
       ?? false;
@@ -187,8 +185,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkDrupalCoreComposerPatchesLevel()
   {
 
-    $just_a_warning = in_array('disable-drupal-core-patches-level-check', $this->extra['composer-checks']) ?? false;
-    $message_type = $just_a_warning ? 'warning' : 'error';
+    $message_type = $this->getMessageType('disable-drupal-core-patches-level-check');
 
     $patchLevel = $this->extra['patchLevel']['drupal/core'] ?? false;
     $patchLevelIsString = is_string($patchLevel);
@@ -215,8 +212,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkPatchesStoredInComposerJson()
   {
 
-    $just_a_warning = in_array('disable-patches-file-check', $this->extra['composer-checks']) ?? false;
-    $message_type = $just_a_warning ? 'warning' : 'error';
+    $message_type = $this->getMessageType('disable-patches-file-check');
 
     if (!isset($this->extra['patches-file'])) {
       return;
@@ -237,9 +233,6 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
    */
   public function onPostInstallCmd(Event $event)
   {
-
-    $this->extra['composer-checks'] = $this->extra['composer-checks'] ?? [];
-
     // Composer checks.
     $this->checkDrupalCoreComposerPatchesLevel();
     $this->checkComposerBreaksIfPatchesDoNotApply();
@@ -254,8 +247,6 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
    */
   public function onPostUpdateCmd(Event $event)
   {
-    $this->extra['composer-checks'] = $this->extra['composer-checks'] ?? [];
-
     // Composer checks.
     $this->checkDrupalCoreComposerPatchesLevel();
     $this->checkComposerBreaksIfPatchesDoNotApply();
@@ -273,6 +264,23 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     if ($message_type === 'error') {
       exit(1);
     }
+  }
+
+
+  /**
+   * Get the message type based on the setting.
+   *
+   * @param string $setting
+   * @return string
+   */
+  private function getMessageType(string $setting) {
+    if (!isset($this->extra['composer-checks'])) {
+      return 'error';
+    }
+
+    $just_a_warning = in_array($setting, $this->extra['composer-checks']) ?? false;
+    $message_type = $just_a_warning ? 'warning' : 'error';
+    return $message_type;
   }
 
 }
