@@ -44,11 +44,16 @@ jobs:
       run: |
         cd test1
         # Run composer install and expect it to fail (exit code 1)
-        if composer install --no-progress --ignore-platform-reqs 2>&1; then
+        echo "=== Running composer install for Test 1 ==="
+        output=$(composer install --no-progress --ignore-platform-reqs 2>&1)
+        exit_code=$?
+        echo "$output"
+
+        if [ $exit_code -eq 0 ]; then
           echo "❌ Test 1 FAILED: Expected error but composer install succeeded"
           exit 1
         else
-          echo "✅ Test 1 PASSED: Composer install correctly failed without disable flag"
+          echo "✅ Test 1 PASSED: Composer install correctly failed without disable flag (exit code: $exit_code)"
         fi
 
     # Test 2: Check should PASS (show warning) when disable flag is present
@@ -69,6 +74,7 @@ jobs:
       run: |
         cd test2
         # Run composer install and expect it to succeed with warnings
+        echo "=== Running composer install for Test 2 ==="
         output=$(composer install --no-progress --ignore-platform-reqs 2>&1)
         exit_code=$?
         echo "$output"
@@ -81,7 +87,7 @@ jobs:
             exit 1
           fi
         else
-          echo "❌ Test 2 FAILED: Composer install failed when it should have succeeded with warning"
+          echo "❌ Test 2 FAILED: Composer install failed when it should have succeeded with warning (exit code: $exit_code)"
           exit 1
         fi
 
@@ -103,6 +109,7 @@ jobs:
       run: |
         cd test3
         # Run composer install and expect it to succeed without warnings about patchLevel
+        echo "=== Running composer install for Test 3 ==="
         output=$(composer install --no-progress --ignore-platform-reqs 2>&1)
         exit_code=$?
         echo "$output"
@@ -115,7 +122,7 @@ jobs:
             echo "✅ Test 3 PASSED: Composer install succeeded with no patchLevel warnings when correctly configured"
           fi
         else
-          echo "❌ Test 3 FAILED: Composer install failed with correct configuration"
+          echo "❌ Test 3 FAILED: Composer install failed with correct configuration (exit code: $exit_code)"
           exit 1
         fi
 
@@ -137,11 +144,16 @@ jobs:
       run: |
         cd test4
         # Run composer install and expect it to fail
-        if composer install --no-progress --ignore-platform-reqs 2>&1; then
+        echo "=== Running composer install for Test 4 ==="
+        output=$(composer install --no-progress --ignore-platform-reqs 2>&1)
+        exit_code=$?
+        echo "$output"
+
+        if [ $exit_code -eq 0 ]; then
           echo "❌ Test 4 FAILED: Expected error but composer install succeeded with incorrect patchLevel"
           exit 1
         else
-          echo "✅ Test 4 PASSED: Composer install correctly failed with incorrect patchLevel value"
+          echo "✅ Test 4 PASSED: Composer install correctly failed with incorrect patchLevel value (exit code: $exit_code)"
         fi
 
     # Test 5: Verify the composer.json files were built correctly
