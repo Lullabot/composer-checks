@@ -56,64 +56,83 @@ jobs:
 
     - name: Test 1 - Verify check fails without disable flag
       run: |
-        # Create a minimal test script to simulate the plugin
-        cat > test-script.php << 'EOF'
-        <?php
-        require_once 'vendor/autoload.php';
+         # Create a minimal test script to simulate the plugin
+         cat > test-script.php << 'EOF'
+         <?php
+         require_once 'vendor/autoload.php';
 
-        use Lullabot\ComposerChecks\ComposerChecksPlugin;
+         // Mock the Composer interfaces that the plugin needs
+         if (!interface_exists('Composer\Plugin\PluginInterface')) {
+             interface PluginInterface {
+                 public function activate($composer, $io);
+                 public function deactivate($composer, $io);
+                 public function uninstall($composer, $io);
+             }
+         } else {
+             interface PluginInterface extends \Composer\Plugin\PluginInterface {}
+         }
 
-        // Mock Composer and IO objects
-        $composer = new class {
-            public function getConfig() { return new stdClass(); }
-            public function getPackage() {
-                return new class {
-                    public function getExtra() {
-                        return json_decode(file_get_contents('test-composer.json'), true)['extra'] ?? [];
-                    }
-                };
-            }
-        };
+         if (!interface_exists('Composer\EventDispatcher\EventSubscriberInterface')) {
+             interface EventSubscriberInterface {
+                 public static function getSubscribedEvents();
+             }
+         } else {
+             interface EventSubscriberInterface extends \Composer\EventDispatcher\EventSubscriberInterface {}
+         }
 
-        $io = new class {
-            public $messages = [];
-            public function error($message) {
-                $this->messages[] = "ERROR: $message";
-                echo "ERROR: $message\n";
-                exit(1);
-            }
-            public function warning($message) {
-                $this->messages[] = "WARNING: $message";
-                echo "WARNING: $message\n";
-            }
-        };
+         use Lullabot\ComposerChecks\ComposerChecksPlugin;
 
-        $plugin = new ComposerChecksPlugin();
+          // Mock Composer and IO objects
+          $composer = new class {
+              public function getConfig() { return new stdClass(); }
+              public function getPackage() {
+                  return new class {
+                      public function getExtra() {
+                          return json_decode(file_get_contents('test-composer.json'), true)['extra'] ?? [];
+                      }
+                  };
+              }
+          };
 
-        // Use reflection to access private methods
-        $reflection = new ReflectionClass($plugin);
-        $method = $reflection->getMethod('checkDrupalCoreComposerPatchesLevel');
-        $method->setAccessible(true);
+          $io = new class {
+              public $messages = [];
+              public function error($message) {
+                  $this->messages[] = "ERROR: $message";
+                  echo "ERROR: $message\n";
+                  exit(1);
+              }
+              public function warning($message) {
+                  $this->messages[] = "WARNING: $message";
+                  echo "WARNING: $message\n";
+              }
+          };
 
-        // Set properties
-        $ioProperty = $reflection->getProperty('io');
-        $ioProperty->setAccessible(true);
-        $ioProperty->setValue($plugin, $io);
+          $plugin = new ComposerChecksPlugin();
 
-        $extraProperty = $reflection->getProperty('extra');
-        $extraProperty->setAccessible(true);
-        $extraProperty->setValue($plugin, json_decode(file_get_contents('test-composer.json'), true)['extra'] ?? []);
+          // Use reflection to access private methods
+          $reflection = new ReflectionClass($plugin);
+          $method = $reflection->getMethod('checkDrupalCoreComposerPatchesLevel');
+          $method->setAccessible(true);
 
-        $method->invoke($plugin);
-        EOF
+          // Set properties
+          $ioProperty = $reflection->getProperty('io');
+          $ioProperty->setAccessible(true);
+          $ioProperty->setValue($plugin, $io);
 
-        # Run test and expect it to fail (exit code 1)
-        if php test-script.php; then
-          echo "❌ Test 1 FAILED: Expected error but check passed"
-          exit 1
-        else
-          echo "✅ Test 1 PASSED: Check correctly failed without disable flag"
-        fi
+          $extraProperty = $reflection->getProperty('extra');
+          $extraProperty->setAccessible(true);
+          $extraProperty->setValue($plugin, json_decode(file_get_contents('test-composer.json'), true)['extra'] ?? []);
+
+          $method->invoke($plugin);
+          EOF
+
+          # Run test and expect it to fail (exit code 1)
+          if php test-script.php; then
+            echo "❌ Test 1 FAILED: Expected error but check passed"
+            exit 1
+          else
+            echo "✅ Test 1 PASSED: Check correctly failed without disable flag"
+          fi
 
     # Test 2: Check should PASS (show warning) when disable flag is present
     - name: Test 2 - Create composer.json with disable flag
