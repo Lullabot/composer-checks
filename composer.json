@@ -20,6 +20,6 @@
     }
   },
   "extra": {
-    "class": "Lullabot\\ComposerChecksPlugin"
+    "class": "Lullabot\\ComposerChecks\\ComposerChecksPlugin"
   }
 }
