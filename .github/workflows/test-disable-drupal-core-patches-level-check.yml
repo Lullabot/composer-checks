@@ -1,0 +1,320 @@
+name: Test Disable Drupal Core Patches Level Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test-disable-drupal-core-patches-level-check:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: ['8.1', '8.2', '8.3']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: json, mbstring
+
+    - name: Install Composer dependencies
+      run: composer install --no-progress --no-suggest --prefer-dist --optimize-autoloader
+
+    # Test 1: Check should FAIL when patchLevel is not configured (no disable flag)
+    - name: Test 1 - Create composer.json without patchLevel and without disable flag
+      run: |
+        cat > test-composer.json << 'EOF'
+        {
+          "name": "test/project",
+          "require": {
+            "drupal/core": "^10.0"
+          },
+          "require-dev": {
+            "lullabot/composer-checks": "*"
+          },
+          "config": {
+            "allow-plugins": {
+              "lullabot/composer-checks": true
+            }
+          },
+          "extra": {
+            "patches": {
+              "drupal/core": {
+                "Some patch": "patches/test.patch"
+              }
+            }
+          }
+        }
+        EOF
+
+    - name: Test 1 - Verify check fails without disable flag
+      run: |
+        # Create a minimal test script to simulate the plugin
+        cat > test-script.php << 'EOF'
+        <?php
+        require_once 'vendor/autoload.php';
+
+        use Lullabot\ComposerChecks\ComposerChecksPlugin;
+
+        // Mock Composer and IO objects
+        $composer = new class {
+            public function getConfig() { return new stdClass(); }
+            public function getPackage() {
+                return new class {
+                    public function getExtra() {
+                        return json_decode(file_get_contents('test-composer.json'), true)['extra'] ?? [];
+                    }
+                };
+            }
+        };
+
+        $io = new class {
+            public $messages = [];
+            public function error($message) {
+                $this->messages[] = "ERROR: $message";
+                echo "ERROR: $message\n";
+                exit(1);
+            }
+            public function warning($message) {
+                $this->messages[] = "WARNING: $message";
+                echo "WARNING: $message\n";
+            }
+        };
+
+        $plugin = new ComposerChecksPlugin();
+
+        // Use reflection to access private methods
+        $reflection = new ReflectionClass($plugin);
+        $method = $reflection->getMethod('checkDrupalCoreComposerPatchesLevel');
+        $method->setAccessible(true);
+
+        // Set properties
+        $ioProperty = $reflection->getProperty('io');
+        $ioProperty->setAccessible(true);
+        $ioProperty->setValue($plugin, $io);
+
+        $extraProperty = $reflection->getProperty('extra');
+        $extraProperty->setAccessible(true);
+        $extraProperty->setValue($plugin, json_decode(file_get_contents('test-composer.json'), true)['extra'] ?? []);
+
+        $method->invoke($plugin);
+        EOF
+
+        # Run test and expect it to fail (exit code 1)
+        if php test-script.php; then
+          echo "❌ Test 1 FAILED: Expected error but check passed"
+          exit 1
+        else
+          echo "✅ Test 1 PASSED: Check correctly failed without disable flag"
+        fi
+
+    # Test 2: Check should PASS (show warning) when disable flag is present
+    - name: Test 2 - Create composer.json with disable flag
+      run: |
+        cat > test-composer.json << 'EOF'
+        {
+          "name": "test/project",
+          "require": {
+            "drupal/core": "^10.0"
+          },
+          "require-dev": {
+            "lullabot/composer-checks": "*"
+          },
+          "config": {
+            "allow-plugins": {
+              "lullabot/composer-checks": true
+            }
+          },
+          "extra": {
+            "composer-checks": [
+              "disable-drupal-core-patches-level-check"
+            ],
+            "patches": {
+              "drupal/core": {
+                "Some patch": "patches/test.patch"
+              }
+            }
+          }
+        }
+        EOF
+
+    - name: Test 2 - Verify check shows warning with disable flag
+      run: |
+        # Create a test script that expects a warning
+        cat > test-script.php << 'EOF'
+        <?php
+        require_once 'vendor/autoload.php';
+
+        use Lullabot\ComposerChecks\ComposerChecksPlugin;
+
+        // Mock Composer and IO objects
+        $composer = new class {
+            public function getConfig() { return new stdClass(); }
+            public function getPackage() {
+                return new class {
+                    public function getExtra() {
+                        return json_decode(file_get_contents('test-composer.json'), true)['extra'] ?? [];
+                    }
+                };
+            }
+        };
+
+        $io = new class {
+            public $messages = [];
+            public $warningCalled = false;
+            public function error($message) {
+                $this->messages[] = "ERROR: $message";
+                echo "ERROR: $message\n";
+                exit(1);
+            }
+            public function warning($message) {
+                $this->messages[] = "WARNING: $message";
+                $this->warningCalled = true;
+                echo "WARNING: $message\n";
+            }
+        };
+
+        $plugin = new ComposerChecksPlugin();
+
+        // Use reflection to access private methods
+        $reflection = new ReflectionClass($plugin);
+        $method = $reflection->getMethod('checkDrupalCoreComposerPatchesLevel');
+        $method->setAccessible(true);
+
+        // Set properties
+        $ioProperty = $reflection->getProperty('io');
+        $ioProperty->setAccessible(true);
+        $ioProperty->setValue($plugin, $io);
+
+        $extraProperty = $reflection->getProperty('extra');
+        $extraProperty->setAccessible(true);
+        $extraProperty->setValue($plugin, json_decode(file_get_contents('test-composer.json'), true)['extra'] ?? []);
+
+        $method->invoke($plugin);
+
+        if ($io->warningCalled) {
+            echo "✅ Test 2 PASSED: Warning was displayed with disable flag";
+            exit(0);
+        } else {
+            echo "❌ Test 2 FAILED: Expected warning but none was shown";
+            exit(1);
+        }
+        EOF
+
+        php test-script.php
+
+    # Test 3: Check should PASS silently when patchLevel is correctly configured
+    - name: Test 3 - Create composer.json with correct patchLevel configuration
+      run: |
+        cat > test-composer.json << 'EOF'
+        {
+          "name": "test/project",
+          "require": {
+            "drupal/core": "^10.0"
+          },
+          "require-dev": {
+            "lullabot/composer-checks": "*"
+          },
+          "config": {
+            "allow-plugins": {
+              "lullabot/composer-checks": true
+            }
+          },
+          "extra": {
+            "patchLevel": {
+              "drupal/core": "-p2"
+            },
+            "patches": {
+              "drupal/core": {
+                "Some patch": "patches/test.patch"
+              }
+            }
+          }
+        }
+        EOF
+
+    - name: Test 3 - Verify check passes with correct configuration
+      run: |
+        cat > test-script.php << 'EOF'
+        <?php
+        require_once 'vendor/autoload.php';
+
+        use Lullabot\ComposerChecks\ComposerChecksPlugin;
+
+        // Mock Composer and IO objects
+        $composer = new class {
+            public function getConfig() { return new stdClass(); }
+            public function getPackage() {
+                return new class {
+                    public function getExtra() {
+                        return json_decode(file_get_contents('test-composer.json'), true)['extra'] ?? [];
+                    }
+                };
+            }
+        };
+
+        $io = new class {
+            public $messages = [];
+            public $anythingCalled = false;
+            public function error($message) {
+                $this->messages[] = "ERROR: $message";
+                $this->anythingCalled = true;
+                echo "ERROR: $message\n";
+                exit(1);
+            }
+            public function warning($message) {
+                $this->messages[] = "WARNING: $message";
+                $this->anythingCalled = true;
+                echo "WARNING: $message\n";
+            }
+        };
+
+        $plugin = new ComposerChecksPlugin();
+
+        // Use reflection to access private methods
+        $reflection = new ReflectionClass($plugin);
+        $method = $reflection->getMethod('checkDrupalCoreComposerPatchesLevel');
+        $method->setAccessible(true);
+
+        // Set properties
+        $ioProperty = $reflection->getProperty('io');
+        $ioProperty->setAccessible(true);
+        $ioProperty->setValue($plugin, $io);
+
+        $extraProperty = $reflection->getProperty('extra');
+        $extraProperty->setAccessible(true);
+        $extraProperty->setValue($plugin, json_decode(file_get_contents('test-composer.json'), true)['extra'] ?? []);
+
+                // Execute the method and catch any exceptions
+        try {
+            $method->invoke($plugin);
+            $methodExecutedSuccessfully = true;
+        } catch (Exception $e) {
+            echo "❌ Test 3 FAILED: Method threw exception: " . $e->getMessage();
+            exit(1);
+        }
+
+        if (!$io->anythingCalled && $methodExecutedSuccessfully) {
+            echo "✅ Test 3 PASSED: Method executed successfully with no warnings or errors when patchLevel is correctly configured";
+            exit(0);
+        } else if ($io->anythingCalled) {
+            echo "❌ Test 3 FAILED: Unexpected warning/error with correct configuration";
+            exit(1);
+        } else {
+            echo "❌ Test 3 FAILED: Method did not execute successfully";
+            exit(1);
+        }
+        EOF
+
+        php test-script.php
+
+    - name: Cleanup test files
+      run: |
+        rm -f test-composer.json test-script.php
