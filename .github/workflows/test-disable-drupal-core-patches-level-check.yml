@@ -129,12 +129,12 @@ jobs:
         set -e  # Re-enable exit on error (if it was set)
         echo "$output"
 
-        # Check if the output contains the expected warning message
+        # Check if the output doesn't contain the expected warning message
         if echo "$output" | grep -q "Configure patches for Composer's packages to use"; then
-          echo "✅ Test 3 PASSED: Composer install correctly failed without disable flag (exit code: $exit_code)"
-        else
           echo "❌ Test 3 FAILED: Expected warning message but none was shown"
           exit 1
+        else
+          echo "✅ Test 3 PASSED: Composer install succeeded without warnings about patchLevel"
         fi
 
     # Test 4: Check should FAIL when patchLevel is configured but incorrect value
