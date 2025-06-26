@@ -142,7 +142,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     $this->io->$message_type("$msg $link $patchesInfo");
 
     if ($message_type === 'error') {
-      $this->io->error("To throw a warning instead, run `composer config extra.composer-checks.disable-local-patches-check true`");
+      $this->io->info("To throw a warning instead, run `composer config extra.composer-checks.disable-local-patches-check true`");
       exit(1);
     }
   }
