@@ -156,7 +156,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   {
 
     $value = $this->extra['composer-checks']['disable-exit-on-patch-failure-check'] ?? false;
-    $message_type = $value ? 'warning' : 'error';
+    $message_type = $value ? 'error' : 'warning';
 
     $composerExitsOnPatchFailure = $this->extra['composer-exit-on-patch-failure']
       ?? false;
