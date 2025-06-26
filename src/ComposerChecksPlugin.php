@@ -224,7 +224,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
       return;
     }
 
-    $msg = 'Store patches for Composer\'s packages in `composer.json`, not in a separate file. See';
+    $msg = "Store patches for Composer's packages in `composer.json`, not in a separate file. \nSee";
     $link = 'https://architecture.lullabot.com/adr/20220429-composer-patches-inline/';
     $this->io->$message_type("$msg $link");
 
