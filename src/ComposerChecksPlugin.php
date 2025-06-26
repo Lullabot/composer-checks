@@ -219,6 +219,9 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
    */
   public function onPostInstallCmd(Event $event)
   {
+
+    $this->extra['composer-checks'] = $this->extra['composer-checks'] ?? [];
+
     // Composer checks.
     $this->checkDrupalCoreComposerPatchesLevel();
     $this->checkComposerBreaksIfPatchesDoNotApply();
@@ -233,6 +236,8 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
    */
   public function onPostUpdateCmd(Event $event)
   {
+    $this->extra['composer-checks'] = $this->extra['composer-checks'] ?? [];
+
     // Composer checks.
     $this->checkDrupalCoreComposerPatchesLevel();
     $this->checkComposerBreaksIfPatchesDoNotApply();
