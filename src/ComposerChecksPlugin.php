@@ -11,6 +11,7 @@ use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
+use RuntimeException;
 
 class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface {
 
@@ -255,14 +256,14 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   }
 
   /**
-   * Say a message and exit if the message type is error.
+   * Say a message and throw exception if the message type is error.
    */
   private function say(string $message, string $message_type)
   {
     $this->io->log($message, $message_type);
 
     if ($message_type === 'error') {
-      exit(1);
+      throw new RuntimeException(trim($message));
     }
   }
 
