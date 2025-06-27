@@ -84,7 +84,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     // Patches defined on a separate file.
     if ($patchesInExtraFile) {
       if (!file_exists($patchesInExtraFile)) {
-        $this->io->$message_type("The patches file `$patchesInExtraFile` can't be read.");
+        $this->io->log($message_type, "The patches file `$patchesInExtraFile` can't be read.");
         return;
       }
 
@@ -92,7 +92,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
       $patchesContent = json_decode($patchesJsonEncoded, true)['patches'] ?? [];
 
       if (json_last_error()) {
-        $this->io->$message_type(
+        $this->io->log($message_type,
           "The patches file `$patchesInExtraFile` can't be parsed. Message \""
           . json_last_error_msg(). '"'
         );
@@ -109,7 +109,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
 
     // Patches content is not a string.
     if (!is_array($patchesContent)) {
-      $this->io->$message_type("The patches content can't be validated. Check your patches defined in Composer.");
+      $this->io->log($message_type, "The patches content can't be validated. Check your patches defined in Composer.");
       return;
     }
 
