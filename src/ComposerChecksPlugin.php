@@ -259,7 +259,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
    */
   private function say(string $message, string $message_type)
   {
-    $this->io->$message_type("$message");
+    $this->io->log($message, $message_type);
 
     if ($message_type === 'error') {
       exit(1);
