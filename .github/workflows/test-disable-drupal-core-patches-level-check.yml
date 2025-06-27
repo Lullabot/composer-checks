@@ -33,7 +33,6 @@ jobs:
         composer config repositories.lullabot/composer-checks '{"type": "path", "url": "../"}'
         composer config allow-plugins.lullabot/composer-checks true
         composer config allow-plugins.cweagans/composer-patches true
-        composer require drupal/core:^10.0 --no-update
         composer require cweagans/composer-patches:^1.7 --no-update
         composer require "lullabot/composer-checks:*" --dev --no-update
         composer config minimum-stability dev
@@ -68,7 +67,6 @@ jobs:
         composer config repositories.lullabot/composer-checks '{"type": "path", "url": "../"}'
         composer config allow-plugins.lullabot/composer-checks true
         composer config allow-plugins.cweagans/composer-patches true
-        composer require drupal/core:^10.0 --no-update
         composer require cweagans/composer-patches:^1.7 --no-update
         composer require "lullabot/composer-checks:*" --dev --no-update
         jq '.extra["composer-checks"][0] = "disable-drupal-core-patches-level-check"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
@@ -104,7 +102,6 @@ jobs:
         composer config repositories.lullabot/composer-checks '{"type": "path", "url": "../"}'
         composer config allow-plugins.lullabot/composer-checks true
         composer config allow-plugins.cweagans/composer-patches true
-        composer require drupal/core:^10.0 --no-update
         composer require cweagans/composer-patches:^1.7 --no-update
         composer require "lullabot/composer-checks:*" --dev --no-update
         jq '.extra.patchLevel["drupal/core"] = "-p2"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
@@ -143,7 +140,6 @@ jobs:
         composer config repositories.lullabot/composer-checks '{"type": "path", "url": "../"}'
         composer config allow-plugins.lullabot/composer-checks true
         composer config allow-plugins.cweagans/composer-patches true
-        composer require drupal/core:^10.0 --no-update
         composer require cweagans/composer-patches:^1.7 --no-update
         composer require "lullabot/composer-checks:*" --dev --no-update
         jq '.extra.patchLevel["drupal/core"] = "-p1"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
