@@ -36,6 +36,7 @@ jobs:
         composer require cweagans/composer-patches:^1.7 --no-update
         composer require "lullabot/composer-checks:*" --dev --no-update
         composer config minimum-stability dev
+        composer config prefer-stable true
 
         jq '.extra["composer-checks"][1] = "break-composer-installation-if-patches-fail"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
         jq '.extra["composer-checks"][2] = "disable-exit-on-patch-failure-check"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
@@ -69,11 +70,14 @@ jobs:
         composer config allow-plugins.cweagans/composer-patches true
         composer require cweagans/composer-patches:^1.7 --no-update
         composer require "lullabot/composer-checks:*" --dev --no-update
+
+        composer config minimum-stability dev
+        composer config prefer-stable true
+
         jq '.extra["composer-checks"][0] = "disable-drupal-core-patches-level-check"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
         jq '.extra["composer-checks"][1] = "break-composer-installation-if-patches-fail"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
         jq '.extra["composer-checks"][2] = "disable-exit-on-patch-failure-check"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
 
-        composer config minimum-stability dev
 
     - name: Test 2 - Verify check shows warning with disable flag
       run: |
@@ -105,8 +109,8 @@ jobs:
         composer require cweagans/composer-patches:^1.7 --no-update
         composer require "lullabot/composer-checks:*" --dev --no-update
         jq '.extra.patchLevel["drupal/core"] = "-p2"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-
         composer config minimum-stability dev
+        composer config prefer-stable true
 
         # avoid It's recommended to break Composer's installation if patches don't apply.
         jq '.extra["composer-checks"][1] = "break-composer-installation-if-patches-fail"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
@@ -144,11 +148,12 @@ jobs:
         composer require "lullabot/composer-checks:*" --dev --no-update
         jq '.extra.patchLevel["drupal/core"] = "-p1"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
 
+        composer config minimum-stability dev
+        composer config prefer-stable true
+
         # Avoid other checks
         jq '.extra["composer-checks"][1] = "break-composer-installation-if-patches-fail"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
         jq '.extra["composer-checks"][2] = "disable-exit-on-patch-failure-check"' composer.json > composer.json.tmp && mv composer.json.tmp composer.json
-
-        composer config minimum-stability dev
 
     - name: Test 4 - Verify check fails with incorrect patchLevel value
       run: |
