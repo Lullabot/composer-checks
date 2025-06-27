@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-disable-drupal-core-patches-level-check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     strategy:
       matrix:
