@@ -2,9 +2,8 @@ name: Test Disable Drupal Core Patches Level Check
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, develop ]
 
 jobs:
   test-disable-drupal-core-patches-level-check:
