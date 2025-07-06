@@ -214,11 +214,8 @@ class ComposerChecksPluginTest extends TestCase {
    *   The command to run.
    * @param string|null $cwd
    *   The working directory or NULL to use the current one.
-   *
-   * @return \Symfony\Component\Process\Process
-   *   The process object.
    */
-  private function runProcess(array $command, ?string $cwd = NULL): Process {
+  private function runProcess(array $command, ?string $cwd = NULL) {
     $process = new Process($command, $cwd);
     $process->setTimeout(60);
     $process->run();
@@ -226,8 +223,6 @@ class ComposerChecksPluginTest extends TestCase {
     if (!$process->isSuccessful()) {
       throw new ProcessFailedException($process);
     }
-
-    return $process;
   }
 
 }
