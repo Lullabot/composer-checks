@@ -26,4 +26,4 @@ jobs:
       run: composer install --no-progress --prefer-dist --optimize-autoloader
 
     - name: Run PHPUnit tests
-      run: vendor/bin/paratest --functional --testdox
+      run: vendor/bin/phpunit --testdox
