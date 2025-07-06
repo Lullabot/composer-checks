@@ -138,7 +138,7 @@ class ComposerChecksPluginTest extends TestCase {
     $this->runProcess(['composer', 'init', '--name=test/project', '--no-interaction'], $directory);
 
     // Configure repositories and plugins.
-    $this->runProcess(['composer', 'config', 'repositories.lullabot/composer-checks', '{"type": "path", "url": "' . getcwd() . '"}'], $directory);
+    $this->runProcess(['composer', 'config', 'repositories.lullabot/composer-checks', '{"type": "path", "url": "' . __DIR__ . '/../../../' . '"}'], $directory);
     $this->runProcess(['composer', 'config', 'allow-plugins.lullabot/composer-checks', 'true'], $directory);
     $this->runProcess(['composer', 'config', 'allow-plugins.cweagans/composer-patches', 'true'], $directory);
 
