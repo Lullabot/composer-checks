@@ -12,11 +12,11 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 class ComposerChecksPluginTest extends TestCase {
 
   /**
-   * Directory for test 1.
+   * Directory for test.
    *
    * @var string
    */
-  private $testDir;
+  private string $testDir;
 
   /**
    * {@inheritdoc}
