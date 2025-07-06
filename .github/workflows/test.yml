@@ -1,4 +1,4 @@
-name: Test Disable Drupal Core Patches Level Check
+name: Test
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  test-disable-drupal-core-patches-level-check:
+  test:
     runs-on: ubuntu-24.04
 
     strategy:
