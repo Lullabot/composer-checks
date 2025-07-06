@@ -25,7 +25,7 @@
   },
   "require-dev": {
     "composer/composer": "^2.8",
-    "phpunit/phpunit": "^9.5",
+    "phpunit/phpunit": "^12.2.6",
     "symfony/process": "^7.3"
   },
   "autoload-dev": {
