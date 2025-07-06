@@ -20,9 +20,17 @@
     }
   },
   "extra": {
-    "class": "Lullabot\\ComposerChecks\\ComposerChecksPlugin"
+    "class": "Lullabot\\ComposerChecks\\ComposerChecksPlugin",
+    "composer-version": "^2.8.6"
   },
   "require-dev": {
-    "composer/composer": "^2.8"
+    "composer/composer": "^2.8",
+    "phpunit/phpunit": "^9.5",
+    "symfony/process": "^5.4"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Lullabot\\ComposerChecks\\Tests\\": "tests/src"
+    }
   }
 }
