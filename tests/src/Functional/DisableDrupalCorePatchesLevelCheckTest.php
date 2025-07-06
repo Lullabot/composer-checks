@@ -16,28 +16,7 @@ class DisableDrupalCorePatchesLevelCheckTest extends TestCase {
    *
    * @var string
    */
-  private $test1Dir;
-
-  /**
-   * Directory for test 2.
-   *
-   * @var string
-   */
-  private $test2Dir;
-
-  /**
-   * Directory for test 3.
-   *
-   * @var string
-   */
-  private $test3Dir;
-
-  /**
-   * Directory for test 4.
-   *
-   * @var string
-   */
-  private $test4Dir;
+  private $testDir;
 
   /**
    * {@inheritdoc}
@@ -46,15 +25,9 @@ class DisableDrupalCorePatchesLevelCheckTest extends TestCase {
     parent::setUp();
 
     // Create test directories.
-    $this->test1Dir = sys_get_temp_dir() . '/composer-checks-test1-' . uniqid();
-    $this->test2Dir = sys_get_temp_dir() . '/composer-checks-test2-' . uniqid();
-    $this->test3Dir = sys_get_temp_dir() . '/composer-checks-test3-' . uniqid();
-    $this->test4Dir = sys_get_temp_dir() . '/composer-checks-test4-' . uniqid();
+    $this->testDir = sys_get_temp_dir() . '/composer-checks-test-' . uniqid();
 
-    mkdir($this->test1Dir, 0777, TRUE);
-    mkdir($this->test2Dir, 0777, TRUE);
-    mkdir($this->test3Dir, 0777, TRUE);
-    mkdir($this->test4Dir, 0777, TRUE);
+    mkdir($this->testDir);
   }
 
   /**
@@ -62,10 +35,7 @@ class DisableDrupalCorePatchesLevelCheckTest extends TestCase {
    */
   protected function tearDown(): void {
     // Clean up test directories.
-    $this->runProcess(['rm', '-rf', $this->test1Dir]);
-    $this->runProcess(['rm', '-rf', $this->test2Dir]);
-    $this->runProcess(['rm', '-rf', $this->test3Dir]);
-    $this->runProcess(['rm', '-rf', $this->test4Dir]);
+    $this->runProcess(['rm', '-rf', $this->testDir]);
 
     parent::tearDown();
   }
@@ -75,13 +45,13 @@ class DisableDrupalCorePatchesLevelCheckTest extends TestCase {
    */
   public function testFailWithoutPatchLevelAndDisableFlag(): void {
     // Build composer.json without patchLevel and without disable flag.
-    $this->setupComposerJson($this->test1Dir, [
+    $this->setupComposerJson($this->testDir, [
       'break-composer-installation-if-patches-fail',
       'disable-exit-on-patch-failure-check',
     ]);
 
     // Run composer install and expect it to fail.
-    $process = $this->runComposerInstall($this->test1Dir, FALSE);
+    $process = $this->runComposerInstall($this->testDir, FALSE);
 
     // Check if the output contains the expected warning message.
     $this->assertStringContainsString(
@@ -95,14 +65,14 @@ class DisableDrupalCorePatchesLevelCheckTest extends TestCase {
    */
   public function testPassWithDisableFlag(): void {
     // Build composer.json with disable flag.
-    $this->setupComposerJson($this->test2Dir, [
+    $this->setupComposerJson($this->testDir, [
       'disable-drupal-core-patches-level-check',
       'break-composer-installation-if-patches-fail',
       'disable-exit-on-patch-failure-check',
     ]);
 
     // Run composer install and expect it to succeed with warnings.
-    $process = $this->runComposerInstall($this->test2Dir, TRUE);
+    $process = $this->runComposerInstall($this->testDir, TRUE);
 
     // Check if the output contains the expected warning message.
     $this->assertStringContainsString(
@@ -116,13 +86,13 @@ class DisableDrupalCorePatchesLevelCheckTest extends TestCase {
    */
   public function testPassWithCorrectPatchLevel(): void {
     // Build composer.json with correct patchLevel configuration.
-    $this->setupComposerJson($this->test3Dir, [
+    $this->setupComposerJson($this->testDir, [
       'break-composer-installation-if-patches-fail',
       'disable-exit-on-patch-failure-check',
     ], TRUE);
 
     // Run composer install and expect it to succeed without warnings.
-    $process = $this->runComposerInstall($this->test3Dir, TRUE);
+    $process = $this->runComposerInstall($this->testDir, TRUE);
 
     // Check if the output doesn't contain the expected warning message.
     $this->assertStringNotContainsString(
@@ -136,13 +106,13 @@ class DisableDrupalCorePatchesLevelCheckTest extends TestCase {
    */
   public function testFailWithIncorrectPatchLevel(): void {
     // Build composer.json with incorrect patchLevel value.
-    $this->setupComposerJson($this->test4Dir, [
+    $this->setupComposerJson($this->testDir, [
       'break-composer-installation-if-patches-fail',
       'disable-exit-on-patch-failure-check',
     ], FALSE, TRUE);
 
     // Run composer install and expect it to fail.
-    $process = $this->runComposerInstall($this->test4Dir, FALSE);
+    $process = $this->runComposerInstall($this->testDir, FALSE);
 
     // Check if the output contains the expected warning message.
     $this->assertStringContainsString(
