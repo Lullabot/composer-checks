@@ -7,9 +7,9 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 /**
- * Tests for the Disable Drupal Core Patches Level Check functionality.
+ * Tests the Composer Checks plugin.
  */
-class DisableDrupalCorePatchesLevelCheckTest extends TestCase {
+class ComposerChecksPluginTest extends TestCase {
 
   /**
    * Directory for test 1.
