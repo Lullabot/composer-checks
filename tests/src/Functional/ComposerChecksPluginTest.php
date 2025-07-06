@@ -55,7 +55,7 @@ class ComposerChecksPluginTest extends TestCase {
 
     // Check if the output contains the expected warning message.
     $this->assertStringContainsString(
-      'Configure patches for Composer\'s packages to use',
+      "Configure patches for Composer's packages to use",
       $process->getOutput() . $process->getErrorOutput()
     );
   }
@@ -76,7 +76,7 @@ class ComposerChecksPluginTest extends TestCase {
 
     // Check if the output contains the expected warning message.
     $this->assertStringContainsString(
-      'Configure patches for Composer\'s packages to use',
+      "Configure patches for Composer's packages to use",
       $process->getOutput() . $process->getErrorOutput()
     );
   }
@@ -96,7 +96,7 @@ class ComposerChecksPluginTest extends TestCase {
 
     // Check if the output doesn't contain the expected warning message.
     $this->assertStringNotContainsString(
-      'Configure patches for Composer\'s packages to use',
+      "Configure patches for Composer's packages to use",
       $process->getOutput() . $process->getErrorOutput()
     );
   }
@@ -116,7 +116,7 @@ class ComposerChecksPluginTest extends TestCase {
 
     // Check if the output contains the expected warning message.
     $this->assertStringContainsString(
-      'Configure patches for Composer\'s packages to use',
+      "Configure patches for Composer's packages to use",
       $process->getOutput() . $process->getErrorOutput()
     );
   }
@@ -138,7 +138,9 @@ class ComposerChecksPluginTest extends TestCase {
     $this->runProcess(['composer', 'init', '--name=test/project', '--no-interaction'], $directory);
 
     // Configure repositories and plugins.
-    $this->runProcess(['composer', 'config', 'repositories.lullabot/composer-checks', '{"type": "path", "url": "' . __DIR__ . '/../../../' . '"}'], $directory);
+    $this->runProcess(['composer', 'config', 'repositories.lullabot/composer-checks',
+      sprintf('{"type": "path", "url": "%s/../../../"}', __DIR__)
+    ], $directory);
     $this->runProcess(['composer', 'config', 'allow-plugins.lullabot/composer-checks', 'true'], $directory);
     $this->runProcess(['composer', 'config', 'allow-plugins.cweagans/composer-patches', 'true'], $directory);
 
