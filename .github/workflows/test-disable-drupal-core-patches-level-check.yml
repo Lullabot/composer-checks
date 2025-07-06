@@ -26,4 +26,4 @@ jobs:
       run: composer install --no-progress --prefer-dist --optimize-autoloader
 
     - name: Run PHPUnit tests
-      run: vendor/bin/phpunit --testdox tests/src/Functional/DisableDrupalCorePatchesLevelCheckTest.php
+      run: vendor/bin/phpunit --testdox
