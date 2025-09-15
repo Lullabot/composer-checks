@@ -11,6 +11,7 @@ use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
+use RuntimeException;
 
 class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface {
 
@@ -76,18 +77,14 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkComposerPatchesAreLocal()
   {
 
-    // Opt-out to avoid this check.
-    if ($this->extra['composer-checks']['disable-local-patches-check'] ?? false) {
-      return;
-    }
-
+    $message_type = $this->getMessageType('disable-local-patches-check');
     $patchesInComposer = $this->extra['patches'] ?? false;
     $patchesInExtraFile = $this->extra['patches-file'] ?? false;
 
     // Patches defined on a separate file.
     if ($patchesInExtraFile) {
       if (!file_exists($patchesInExtraFile)) {
-        $this->io->warning("The patches file `$patchesInExtraFile` can't be read.");
+        $this->io->log($message_type, "The patches file `$patchesInExtraFile` can't be read.");
         return;
       }
 
@@ -95,7 +92,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
       $patchesContent = json_decode($patchesJsonEncoded, true)['patches'] ?? [];
 
       if (json_last_error()) {
-        $this->io->warning(
+        $this->io->log($message_type,
           "The patches file `$patchesInExtraFile` can't be parsed. Message \""
           . json_last_error_msg(). '"'
         );
@@ -112,7 +109,7 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
 
     // Patches content is not a string.
     if (!is_array($patchesContent)) {
-      $this->io->warning("The patches content can't be validated. Check your patches defined in Composer.");
+      $this->io->log($message_type, "The patches content can't be validated. Check your patches defined in Composer.");
       return;
     }
 
@@ -139,10 +136,14 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     }
     $patchesInfo = rtrim($patchesInfo, PHP_EOL);
 
-    // Communicate the user.
-    $msg = 'Use local copies of patch files. See';
-    $link = 'https://architecture.lullabot.com/adr/20220429-composer-patch-files/';
-    $this->io->warning("$msg $link $patchesInfo");
+    $this->say("
+      Use local copies of patch files for Composer's packages.
+      \nSee https://architecture.lullabot.com/adr/20220429-composer-patch-files/
+      \n$patchesInfo
+      ",
+      $message_type
+    );
+
   }
 
   /**
@@ -153,10 +154,8 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkComposerBreaksIfPatchesDoNotApply()
   {
 
-    // Opt-out to avoid this check.
-    if ($this->extra['composer-checks']['disable-exit-on-patch-failure-check'] ?? false) {
-      return;
-    }
+    $message_type = $this->getMessageType('disable-exit-on-patch-failure-check');
+
     $composerExitsOnPatchFailure = $this->extra['composer-exit-on-patch-failure']
       ?? false;
     $composerExitsOnPatchFailureBool = is_bool($composerExitsOnPatchFailure);
@@ -164,15 +163,19 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
       !$composerExitsOnPatchFailureBool;
     $isBoolButNotTrue = $composerExitsOnPatchFailureBool
       && $composerExitsOnPatchFailure !== true;
-    $warn = $isNotConfiguredOrNotBool && $isBoolButNotTrue;
+    $should_warn = $isNotConfiguredOrNotBool && $isBoolButNotTrue;
 
-    if (!$warn) {
+    if (!$should_warn) {
       return;
     }
 
-    $msg = "Break Composer install if patches don't apply. See";
-    $link = 'https://architecture.lullabot.com/adr/20220429-composer-exit-failure/';
-    $this->io->warning("$msg $link");
+    $this->say("
+      It's recommended to break Composer's installation if patches don't apply.
+      \nSee https://architecture.lullabot.com/adr/20220429-composer-exit-failure/
+      ",
+      $message_type
+    );
+
   }
 
   /**
@@ -183,23 +186,23 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkDrupalCoreComposerPatchesLevel()
   {
 
-    // Opt-out to avoid this check.
-    if ($this->extra['composer-checks']['disable-drupal-core-patches-level-check'] ?? false) {
-      return;
-    }
+    $message_type = $this->getMessageType('disable-drupal-core-patches-level-check');
 
     $patchLevel = $this->extra['patchLevel']['drupal/core'] ?? false;
     $patchLevelIsString = is_string($patchLevel);
-    $warn = (!$patchLevel || !$patchLevelIsString)
+    $should_warn = (!$patchLevel || !$patchLevelIsString)
       || ($patchLevelIsString && $patchLevel != '-p2');
 
-    if (!$warn) {
+    if (!$should_warn) {
       return;
     }
 
-    $msg = 'Configure Composer patches to use `-p2` as `patchLevel` for Drupal core. See';
-    $link = 'https://architecture.lullabot.com/adr/20220429-composer-patchlevel/';
-    $this->io->warning("$msg $link");
+    $this->say("
+      Configure patches for Composer's packages to use `-p2` as `patchLevel` for Drupal core.
+      \nSee https://architecture.lullabot.com/adr/20220429-composer-patchlevel/
+      ",
+      $message_type
+    );
   }
 
   /**
@@ -210,18 +213,18 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
   private function checkPatchesStoredInComposerJson()
   {
 
-    // Opt-out to avoid this check.
-    if ($this->extra['composer-checks']['disable-patches-file-check'] ?? false) {
-      return;
-    }
+    $message_type = $this->getMessageType('disable-patches-file-check');
 
     if (!isset($this->extra['patches-file'])) {
       return;
     }
 
-    $msg = 'Store Composer patches configuration in `composer.json`. See';
-    $link = 'https://architecture.lullabot.com/adr/20220429-composer-patches-inline/';
-    $this->io->warning("$msg $link");
+    $this->say("
+      Store patches for Composer's packages in `composer.json`, not in a separate file.
+      \nSee https://architecture.lullabot.com/adr/20220429-composer-patches-inline/
+      ",
+      $message_type
+    );
   }
 
   /**
@@ -250,6 +253,35 @@ class ComposerChecksPlugin implements PluginInterface, EventSubscriberInterface 
     $this->checkComposerBreaksIfPatchesDoNotApply();
     $this->checkPatchesStoredInComposerJson();
     $this->checkComposerPatchesAreLocal();
+  }
+
+  /**
+   * Say a message and throw exception if the message type is error.
+   */
+  private function say(string $message, string $message_type)
+  {
+    $this->io->log($message_type, $message);
+
+    if ($message_type === 'error') {
+      throw new RuntimeException(trim($message));
+    }
+  }
+
+
+  /**
+   * Get the message type based on the setting.
+   *
+   * @param string $setting
+   * @return string
+   */
+  private function getMessageType(string $setting) {
+    if (!isset($this->extra['composer-checks'])) {
+      return 'error';
+    }
+
+    $just_a_warning = in_array($setting, $this->extra['composer-checks']) ?? false;
+    $message_type = $just_a_warning ? 'warning' : 'error';
+    return $message_type;
   }
 
 }
