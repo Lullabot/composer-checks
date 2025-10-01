@@ -1,9 +1,9 @@
 {
   "name": "lullabot/composer-checks",
-  "description": "Composer checks plugin",
-  "license": "MIT",
   "type": "composer-plugin",
-
+  "description": "Composer checks plugin",
+  "homepage": "https://github.com/Lullabot/composer-checks",
+  "license": "MIT",
   "authors": [
     {
       "name": "rene-ipiales-lullabot",
