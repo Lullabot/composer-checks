@@ -13,24 +13,6 @@ It adds the following checks when running `composer install` or `composer update
 
 ## Installation
 
-Add to your `composer.json` file
-
-```
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/Lullabot/composer-checks.git"
-        }
-    ]
-```
-
-```
-    "config": {
-        "allow-plugins": {
-            "lullabot/composer-checks": true
-        }
-    }
-```
 Run the command:
 ```
 composer require lullabot/composer-checks
